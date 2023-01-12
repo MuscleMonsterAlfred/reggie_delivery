@@ -7,7 +7,7 @@ maven: apache-maven-3.8.6
 
 
 
-#study note
+# study note
 
 1.LambdaQueryWrapper和::的使用\
 LambdaQueryWrapper是mybatis plus中的一个条件构造器对象，只是是需要使用Lambda 语法使用 Wrapper\
