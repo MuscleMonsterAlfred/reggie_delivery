@@ -11,6 +11,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 /**
  * @program: reggie_delivery
@@ -30,6 +31,7 @@ public class EmployeeController {
 
     /**
      * 用户登录功能
+     * 其实推荐放到Service层去
      * @param httpServletRequest
      * @param employee
      * @return
@@ -48,7 +50,7 @@ public class EmployeeController {
             return Result.error("登录失败！");
         }
         //密码不一致，返回登录失败
-        if(emp.getPassword().equals(password)){
+        if(!emp.getPassword().equals(password)){
             return Result.error("登录失败！请检查用户名和密码...");
         }
         //查看员工状态，被锁定状态返回登录失败
@@ -60,5 +62,46 @@ public class EmployeeController {
         httpServletRequest.getSession().setAttribute("employee",emp.getId());
         return Result.success(emp);
     }
+
+
+    /**
+     * 用户退出当前账号
+     * @param httpServletRequest
+     * @return
+     */
+    @PostMapping("/logout")
+    public Result<String> logout(HttpServletRequest httpServletRequest){
+        //清理session中保存的当前登录员工的id
+        httpServletRequest.getSession().removeAttribute("employee");
+        return Result.success("退出成功！");
+    }
+
+    /**
+     * 新增员工
+     * @param employee
+     * @return
+     */
+    @PostMapping
+    public Result<String> save(HttpServletRequest httpServletRequest,@RequestBody Employee employee){
+        log.info("新增员工，员工信息:{}", employee.toString());
+//        try{
+            //设置初始密码，但需要进行md5加密
+            employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+            //创建时间和更新时间默认当前
+            employee.setCreateTime(LocalDateTime.now());
+            employee.setUpdateTime(LocalDateTime.now());
+            //获取当前登录用户的id
+            Long empId = (Long) httpServletRequest.getSession().getAttribute("employee");
+            employee.setCreateUser(empId);
+            employee.setUpdateUser(empId);
+            employeeService.save(employee);
+            log.info("新增员工成功！");
+
+//        }catch (Exception e){
+//            return Result.error("新增员工失败，请检查信息是否正确...");
+//        }
+        return Result.success("新增员工成功！");
+    }
+
 
 }
