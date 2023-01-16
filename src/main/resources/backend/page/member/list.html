@@ -125,7 +125,7 @@
           }
         },
         computed: {},
-        created() {
+        created() {//钩子函数
           this.init()
           this.user = JSON.parse(localStorage.getItem('userInfo')).username
         },

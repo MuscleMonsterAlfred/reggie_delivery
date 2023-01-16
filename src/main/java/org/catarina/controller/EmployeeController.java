@@ -1,8 +1,9 @@
 package org.catarina.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.authenticator.DigestAuthenticator;
+import org.apache.commons.lang.StringUtils;
 import org.catarina.common.Result;
 import org.catarina.entity.Employee;
 import org.catarina.service.EmployeeService;
@@ -101,6 +102,30 @@ public class EmployeeController {
 //            return Result.error("新增员工失败，请检查信息是否正确...");
 //        }
         return Result.success("新增员工成功！");
+    }
+
+    /**
+     * 员工信息的分页查询
+     * @param page
+     * @param pageSize
+     * @param name
+     * @return
+     */
+    @GetMapping("/page")
+    public Result<Page> pageList(int page, int pageSize, String name){
+        log.info("page = {},pageSize = {},name = {}",page,pageSize,name);
+
+        //构造分页构造器
+        Page pageInfo = new Page(page,pageSize);
+        //构造条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+        //添加一个过滤条件
+        queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
+        //添加排序条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+        //执行查询
+        employeeService.page(pageInfo,queryWrapper);
+        return Result.success(pageInfo);
     }
 
 

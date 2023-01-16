@@ -7,7 +7,7 @@
     // 超时
     timeout: 10000000
   })
-  // request拦截器
+  // request拦截器，全局拦截器
   service.interceptors.request.use(config => {
     // 是否需要设置 token
     // const isToken = (config.headers || {}).isToken === false
