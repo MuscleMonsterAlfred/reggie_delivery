@@ -89,12 +89,12 @@ public class EmployeeController {
             //设置初始密码，但需要进行md5加密
             employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
             //创建时间和更新时间默认当前
-            employee.setCreateTime(LocalDateTime.now());
-            employee.setUpdateTime(LocalDateTime.now());
-            //获取当前登录用户的id
-            Long empId = (Long) httpServletRequest.getSession().getAttribute("employee");
-            employee.setCreateUser(empId);
-            employee.setUpdateUser(empId);
+//            employee.setCreateTime(LocalDateTime.now());
+//            employee.setUpdateTime(LocalDateTime.now());
+//            //获取当前登录用户的id
+//            Long empId = (Long) httpServletRequest.getSession().getAttribute("employee");
+//            employee.setCreateUser(empId);
+//            employee.setUpdateUser(empId);
             employeeService.save(employee);
             log.info("新增员工成功！");
 
@@ -127,6 +127,41 @@ public class EmployeeController {
         employeeService.page(pageInfo,queryWrapper);
         return Result.success(pageInfo);
     }
+
+    /**
+     * 根据id修改员工信息
+     * @param employee
+     * @return
+     */
+    @PutMapping
+    public Result<String> updateEmployeeInfo(HttpServletRequest httpServletRequest, @RequestBody Employee employee){
+        log.info(employee.toString());
+
+        //已经实现自动填充功能
+//        Long empId = (Long) httpServletRequest.getSession().getAttribute("employee");
+//        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setUpdateUser(empId);
+//        employee.setStatus();
+        long id = Thread.currentThread().getId();
+        log.info("线程id为：{}",id);
+
+        employeeService.updateById(employee);
+        return Result.success("员工状态更新成功");
+    }
+
+
+    @GetMapping("/{id}")
+    public Result<Employee> getUserInfoById(@PathVariable Long id){
+        log.info("根据id查询员工信息...");
+        Employee employee = employeeService.getById(id);
+        if(employee != null){
+            return Result.success(employee);
+        }
+        return Result.error("没有查询道对应员工信息");
+    }
+
+
+
 
 
 }
