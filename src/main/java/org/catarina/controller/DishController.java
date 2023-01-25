@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.catarina.common.Result;
 import org.catarina.dto.DishDto;
+import org.catarina.dto.SetmealDto;
 import org.catarina.entity.Category;
 import org.catarina.entity.Dish;
 import org.catarina.service.CategoryService;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -137,5 +139,29 @@ public class DishController {
 
         return Result.success("修改菜品成功");
     }
+
+
+    /**
+     * 根据条件查询对应的菜品数据
+     * @param dish
+     * @return
+     */
+    @GetMapping("/list")
+    public Result<List<Dish>> list(Dish dish){
+
+        //构造查询条件
+        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(dish.getCategoryId()!=null, Dish::getCategoryId,dish.getCategoryId());
+        //添加条件，查询状态为1（起售）的菜品
+        queryWrapper.eq(Dish::getStatus,1);
+        //添加排序条件
+        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+
+        List<Dish> list = dishService.list(queryWrapper);
+
+        return Result.success(list);
+    }
+
+
 
 }
