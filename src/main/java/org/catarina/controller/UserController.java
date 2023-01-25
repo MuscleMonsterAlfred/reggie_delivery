@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.catarina.common.Result;
 import org.catarina.entity.User;
+import org.catarina.service.SetmealDishService;
 import org.catarina.service.UserService;
 import org.catarina.utils.SMSUtils;
 import org.catarina.utils.ValidateCodeUtils;
@@ -47,7 +48,7 @@ public class UserController {
             //生成随机的6位验证码
             String code = ValidateCodeUtils.generateValidateCode(6).toString();
             //调用阿里云提供的短信api完成发送短信
-            SMSUtils.sendMessage("瑞吉外卖","",phone,code);
+//            SMSUtils.sendMessage("瑞吉外卖","",phone,code);
             log.info("code={}",code);
             //需要将生成的验证码保存到Session
             session.setAttribute(phone,code);
