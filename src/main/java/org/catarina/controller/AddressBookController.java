@@ -42,9 +42,11 @@ public class AddressBookController {
     @PutMapping("default")
     public Result<AddressBook> setDefault(@RequestBody AddressBook addressBook) {
         log.info("addressBook:{}", addressBook);
+        //查询条件
         LambdaUpdateWrapper<AddressBook> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
         wrapper.set(AddressBook::getIsDefault, 0);
+
         //SQL:update address_book set is_default = 0 where user_id = ?
         addressBookService.update(wrapper);
 
