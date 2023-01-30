@@ -14,8 +14,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Delete;
 import org.catarina.common.Result;
+import org.catarina.dto.DishDto;
 import org.catarina.dto.SetmealDto;
 import org.catarina.entity.Category;
+import org.catarina.entity.Dish;
+import org.catarina.entity.DishFlavor;
 import org.catarina.entity.Setmeal;
 import org.catarina.service.CategoryService;
 import org.catarina.service.SetmealDishService;
@@ -112,6 +115,28 @@ public class SetmealController {
         setmealService.removeWithDish(ids);
         return Result.success("套餐删除成功！");
     }
+
+    /**
+     * 根据条件查询对应的菜品数据
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public Result<List<Setmeal>> list(Setmeal setmeal){
+
+        //构造查询条件
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId()!=null, Setmeal::getCategoryId,setmeal.getCategoryId());
+        //添加条件，查询状态为1（起售）的菜品
+        queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
+        //添加排序条件
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        List<Setmeal> list = setmealService.list(queryWrapper);
+
+        return Result.success(list);
+    }
+
 
 
 }

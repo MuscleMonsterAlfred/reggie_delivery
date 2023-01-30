@@ -17,6 +17,7 @@ import org.catarina.dto.DishDto;
 import org.catarina.dto.SetmealDto;
 import org.catarina.entity.Category;
 import org.catarina.entity.Dish;
+import org.catarina.entity.DishFlavor;
 import org.catarina.service.CategoryService;
 import org.catarina.service.DishFlavorService;
 import org.catarina.service.DishService;
@@ -147,7 +148,7 @@ public class DishController {
      * @return
      */
     @GetMapping("/list")
-    public Result<List<Dish>> list(Dish dish){
+    public Result<List<DishDto>> list(Dish dish){
 
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -159,7 +160,32 @@ public class DishController {
 
         List<Dish> list = dishService.list(queryWrapper);
 
-        return Result.success(list);
+        List<DishDto> dishDtos = list.stream().map((item) -> {
+            DishDto dishDto = new DishDto();
+            //对象拷贝
+            BeanUtils.copyProperties(item,dishDto);
+            //分类id
+            Long categoryId = item.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            //根据分类id查询分类对象
+            if(category != null){
+                //分类名称
+                String categoryName = category.getName();
+                dishDto.setCategoryName(categoryName);
+            }
+
+            //追加内容
+            Long dishId = item.getId();
+            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(DishFlavor::getDishId,dishId);
+            List<DishFlavor> dishFlavorList = dishFlavorService.list(lambdaQueryWrapper);
+            dishDto.setFlavors(dishFlavorList);
+
+            return dishDto;
+        }).collect(Collectors.toList());
+
+
+        return Result.success(dishDtos);
     }
 
 
