@@ -96,6 +96,7 @@ public class ShoppingCartController {
      */
     @DeleteMapping("/clean")
     public Result<String> clean(){
+
         //根据用户id查找相应的购物车信息
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
