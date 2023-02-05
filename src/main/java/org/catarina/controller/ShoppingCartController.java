@@ -70,6 +70,7 @@ public class ShoppingCartController {
             shoppingCartService.save(shoppingCart);
             cart = shoppingCart;
         }
+
         return Result.success(cart);
     }
 
