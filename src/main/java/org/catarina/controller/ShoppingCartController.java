@@ -103,6 +103,7 @@ public class ShoppingCartController {
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
 
         shoppingCartService.remove(queryWrapper);
+
         return Result.success("已清空购物车");
     }
 }
